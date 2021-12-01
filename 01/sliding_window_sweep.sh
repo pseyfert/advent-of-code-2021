@@ -1,5 +1,7 @@
 #!/usr/bin/zsh
 
+set -euo pipefail
+
 zmodload zsh/mapfile
 local -a measurements
 measurements=("${(f)mapfile[$1]}")
@@ -9,7 +11,6 @@ measurements=("${(f)mapfile[$1]}")
 local -i increased
 increased=0
 for (( b=4 ; b<$#measurements; b++ )); do
-  [[ $measurements[$b] -gt $measurements[$b-3] ]] && (( increased++ ))
-  prev=$m
+  [[ $measurements[$b] -gt $measurements[$b-3] ]] && (( increased++ )) || true
 done
 print $increased
