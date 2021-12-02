@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import cppyy
 cppyy.load_library('types_rflx.so')
+cppyy.load_library('types.so')
 
 from cppyy.gbl import Cmd
 from cppyy.gbl import Instruction

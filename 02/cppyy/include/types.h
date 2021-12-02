@@ -1,3 +1,5 @@
+#pragma once
+#include <range/v3/algorithm/for_each.hpp>
 #include <vector>
 
 enum class Cmd { Forward, Down, Up };
@@ -12,27 +14,10 @@ struct State {
   unsigned depth{0};
   int aim{0};
 
-  void apply(const Instruction& i) {
-    switch (i.cmd) {
-      case Cmd::Forward: {
-        horizontal += i.amount;
-        depth += aim*i.amount;
-        break;
-      }
-      case Cmd::Down: {
-        aim += i.amount;
-        break;
-      }
-      case Cmd::Up: {
-        aim -= i.amount;
-        break;
-      }
-    }
-  }
+  void apply(const Instruction& i);
 
-  void apply(const std::vector<Instruction>& v) {
-    for (const auto& i: v) {
-      apply(i);
-    }
+  template <typename T>
+  void apply(const T& v) {
+    ranges::for_each(v, [this](const Instruction& i) { apply(i); });
   }
 };
