@@ -11,18 +11,18 @@ local -i ver
 hor=0
 ver=0
 for c in $read_cmds; do
+  local -a split_c
+  split_c=(${(s: :)c})
   local -i tmp
-  case $c in
-    ((forward*))
-      tmp=${c#"forward "}
+  tmp=$split_c[2]
+  case $split_c[1] in
+    ((forward))
       (( hor += tmp ))
       ;;
-    ((up*))
-      tmp=${c#"up "}
+    ((up))
       (( ver -= tmp ))
       ;;
-    ((down*))
-      tmp=${c#"down "}
+    ((down))
       (( ver += tmp ))
       ;;
   esac
