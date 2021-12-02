@@ -1,0 +1,5 @@
+<lcgdict>
+  <class name="Instruction" />
+  <class name="State" />
+  <enum name="Cmd" />
+</lcgdict>
