@@ -9,14 +9,18 @@ from cppyy.gbl import State
 from cppyy.gbl.std import vector
 
 
+def get_cmd(cmd_str: str) -> Cmd:
+    if cmd_str == "forward":
+        return Cmd.Forward
+    elif cmd_str == "down":
+        return Cmd.Down
+    elif cmd_str == "up":
+        return Cmd.Up
+
+
 def parse(line: str) -> Instruction:
     key, val = line.split(' ')
-    if key == "forward":
-        return Instruction(Cmd.Forward, int(val))
-    elif key == "down":
-        return Instruction(Cmd.Down, int(val))
-    elif key == "up":
-        return Instruction(Cmd.Up, int(val))
+    return Instruction(get_cmd(key), int(val))
 
 
 with open('../input.txt', 'r') as content:
