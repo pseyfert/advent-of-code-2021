@@ -52,6 +52,9 @@ sum_remaining() {
 
 local won=false
 local -i score
+
+local -a boards_still_playing
+boards_still_playing=($(seq $(( $#game / 6 )) ) )
 set +e
 for (( round_id=1; round_id <= $#drawn ; round_id++ )); do
   local -i draw
@@ -82,7 +85,9 @@ for (( round_id=1; round_id <= $#drawn ; round_id++ )); do
 
 
   local -i board_id
-  for (( board_id=1 ; board_id*6 < $#game ; board_id++ )); do
+  local -a winning_this_round
+  winning_this_round=()
+  for board_id in $boards_still_playing; do
     local board=""
     local -a board_cells
     local -i first_row
@@ -99,12 +104,16 @@ for (( round_id=1; round_id <= $#drawn ; round_id++ )); do
     board_cells=(${(s: :)board})
     # for bc in $board_cells; do echo "cell $bc"; done
     if check_board $board_cells ; then
-      won=true
       sum_remaining $board_cells
       (( score = $? * $draw ))
-      echo "Board $board_id won, with a score of $score"
-      break
+      [[ \!$won ]] && echo "Board $board_id won, with a score of $score"
+      won=true
+      winning_this_round+=($board_id)
     fi
   done
-  $won&&break
+  boards_still_playing=(${boards_still_playing:|winning_this_round})
+  if [[ $#boards_still_playing == 1 ]]; then
+    echo "last board in play: $boards_still_playing"
+    won=false
+  fi
 done
