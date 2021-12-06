@@ -35,7 +35,7 @@ def filter_out(patterns, majority=True):
         # how many unmasked have the e-th bit set
         bit_set = (patterns & check[e]).sum()//check[e]
         # how many are unmasked
-        total = np.invert(patterns.mask).sum()
+        total = patterns.count()
         keep_patterns_with_0 = (patterns & check[e]) == check[e]
         if majority == (bit_set >= (total+1)//2):
             # keep those numbers where the bit is set
