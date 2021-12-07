@@ -33,16 +33,16 @@ co2 = np.ma.masked_array(data[0], mask=[False]*len(data[0]))
 def filter_out(patterns, majority=True):
     for e in range(12)[::-1]:
         # how many unmasked have the e-th bit set
-        bit_set = (patterns & check[e]).sum()//check[e]
+        keep_patterns_with_0 = (patterns & check[e]) > 0
+        bit_set = keep_patterns_with_0.sum()
         # how many are unmasked
         total = patterns.count()
-        keep_patterns_with_0 = (patterns & check[e]) == check[e]
         if majority == (bit_set >= (total+1)//2):
             # keep those numbers where the bit is set
             patterns.mask |= np.invert(keep_patterns_with_0)
         else:
             patterns.mask |= keep_patterns_with_0
-        if np.invert(patterns.mask).sum() == 1:
+        if patterns.count() == 1:
             return patterns
 
 
