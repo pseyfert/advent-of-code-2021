@@ -29,17 +29,17 @@ echo "Part I: Fuelcost is $fuelcost1"
 # Fuel consumption is the famous Σ^{N}_{i=0} i = N*(N+1)/2
 # Mean minimizes squared distance.
 # Didn't spend time thinking about rounding to the next integer, just brute force the two.
-local -i mean_pos_lo=$(( floor(mean) ))
-local -i mean_pos_hi=$(( ceil(mean) ))
-echo "Mean crab position(f) is at $mean ($mean_pos_lo, $mean_pos_hi)"
+#
+# Hindsight: Instead of optimizing Σ_crabs dist^2 (what the arithmetic mean does) I should minimize Σ_crabs dist^2+dist = Σ_crabs dist*(dist+1) = Σ_crabs (dist+0.5)^2 -c
+# The difference: whereas the former has its minimum at 0, the latter has its at -0.5
+# So - I'm handwaving a bit - let's subtract 0.5 from the mean.
+# For rounding - I didn't find a round function - I use round(x) = floor(x+0.5)
+local -F best_pos=$(( floor(mean) ))
 
-local -i fuelcost2_l=0
-local -i fuelcost2_h=0
+local -i fuelcost2=0
 local -i this_crab_dist=0
 for crab in $crabs; do
-  (( this_crab_dist = abs(crab-mean_pos_lo) ))
-  (( fuelcost2_l += this_crab_dist * ( this_crab_dist + 1) / 2 ))
-  (( this_crab_dist = abs(crab-mean_pos_hi) ))
-  (( fuelcost2_h += this_crab_dist * ( this_crab_dist + 1) / 2 ))
+  (( this_crab_dist = abs(crab-best_pos) ))
+  (( fuelcost2 += this_crab_dist * ( this_crab_dist + 1) / 2 ))
 done
-echo "Part II: Fuelcost is $(( min(fuelcost2_l, fuelcost2_h) ))"
+echo "Part II: Fuelcost is $(( fuelcost2 ))"
