@@ -107,6 +107,8 @@ for i, line in enumerate(data):
     matrixs[i] = create_dict(decode_data)
     encoded[i] = parse_encoded(encoded_number)
 
+# The usage of diagonal implies that many off-diagonal elements get computed,
+# that won't ever get looked at.
 dewired = np.tensordot(matrixs, encoded, axes=((2, ), (2, ))).diagonal(
     axis1=0, axis2=2).transpose((2, 1, 0))
 
