@@ -1,0 +1,6 @@
+1 → 2
+7 → 3
+4 → 4
+2,3,5 → 5 (3 uses 2 of 1, 5 uses 3 of 4, 2 left over)
+0,6,9 → 6 (9 uses all of 4, 0 uses both of 1 (if it's not a 9), 6 left over)
+8 → 7
