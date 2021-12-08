@@ -109,8 +109,14 @@ for i, line in enumerate(data):
 
 # The usage of diagonal implies that many off-diagonal elements get computed,
 # that won't ever get looked at.
-dewired = np.tensordot(matrixs, encoded, axes=((2, ), (2, ))).diagonal(
-    axis1=0, axis2=2).transpose((2, 1, 0))
+# dewired = np.tensordot(matrixs, encoded, axes=((2, ), (2, ))).diagonal(
+#     axis1=0, axis2=2).transpose((2, 1, 0))
+
+# l = line
+# o = out_digit_code
+# i = in_digit_code
+# d = decimal_digit
+dewired = np.einsum('loi,ldi->ldo', matrixs, encoded)
 
 acc = real_wires_to_numbers(dewired).sum()
 print(f"part II (version 2): {acc}")
