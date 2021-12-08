@@ -4,3 +4,12 @@
 2,3,5 → 5 (3 uses 2 of 1, 5 uses 3 of 4, 2 left over)
 0,6,9 → 6 (9 uses all of 4, 0 uses both of 1 (if it's not a 9), 6 left over)
 8 → 7
+
+in hindsight:
+
+e is used by 4 digits
+b by 6
+f by 9
+
+d,g by 7 (can be distinguished: d is used in 4)
+a,c by 8 (can be distinguished: c is used by 4)
