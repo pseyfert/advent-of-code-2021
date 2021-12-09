@@ -11,10 +11,10 @@ funcs_rflx.so: funcs_rflx.cpp
 	g++ $(shell cling-config --cppflags) -fPIC -shared -o $@ $< $(CPPFLAGS)
 
 test/test.o: test/test.cc $(headers)
-	g++ -Wall -Wextra -std=c++20 -Iinclude -O3 $< -c -o $@ -lgtest_main -lgtest -pthread
+	g++ -Wall -Wextra -std=c++20 -Iinclude -O3 $< -c -o $@ -pthread
 
 test/test: test/test.o src/funcs.o
-	g++ -Wall -Wextra -std=c++20 -Iinclude -O3 $^ -o $@ -lgtest_main -lgtest -pthread
+	g++ -Wall -Wextra -std=c++20 -Iinclude -O3 $^ -o $@ -lgtest_main -lgtest -pthread -lfmt
 
 src/funcs.o: src/funcs.cpp $(headers)
 	g++ -Wall -Wextra -std=c++20 -Iinclude -O3 $< -o $@ -c -pthread
@@ -23,7 +23,7 @@ src/funcs.os: src/funcs.cpp $(headers)
 	g++ -Wall -Wextra -std=c++20 -Iinclude -O3 $< -o $@ -c -pthread -fPIC
 
 funcs.so: src/funcs.os
-	g++ $< -o $@ -fPIC -shared $(CPPFLAGS)
+	g++ $< -o $@ -fPIC -shared $(CPPFLAGS) -lfmt
 
 clean:
-	rm -f */*.o test/test
+	rm -f */*.o test/test *.so *.pcm *_rflx* */*.os

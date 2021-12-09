@@ -1,6 +1,8 @@
 #include "funcs.h"
 #include <range/v3/algorithm/max_element.hpp>
 #include <range/v3/view/indices.hpp>
+// #include <fmt/printf.h>
+// #include <format>
 
 #include <iostream>
 
@@ -19,7 +21,7 @@ std::size_t msb(const uint16_t number) {
 
 uint16_t most_majority(const std::vector<uint16_t>& input) {
   uint16_t testbit = 1 << msb(*ranges::max_element(input));
-  uint16_t mask{0};
+  uint16_t mask{testbit};
   uint16_t pattern{majority_bit(input, testbit)};
   testbit = testbit >> 1;
   for (; testbit != 0; testbit = testbit >> 1) {
@@ -47,13 +49,12 @@ uint16_t epsilon(const std::vector<uint16_t>& input) {
 
 uint16_t most_minority(const std::vector<uint16_t>& input) {
   uint16_t testbit = 1 << msb(*ranges::max_element(input));
-  uint16_t mask{0};
+  uint16_t mask{testbit};
   uint16_t pattern{majority_bit(input, testbit) ^ testbit};
   testbit = testbit >> 1;
   for (; testbit != 0; testbit = testbit >> 1) {
-    // TODO: protect against set running empty.
-    if (ranges::distance(filter_stuff(input, pattern, mask)) == 0) {
-      break;
+    if (ranges::distance(filter_stuff(input, pattern, mask)) == 1) {
+      return *filter_stuff(input, pattern, mask).begin();
     }
     pattern |=
         majority_bit(filter_stuff(input, pattern, mask), testbit) ^ testbit;

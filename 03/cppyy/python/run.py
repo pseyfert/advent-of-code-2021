@@ -2,11 +2,14 @@
 import cppyy
 cppyy.load_library("./funcs_rflx.so")
 cppyy.load_library("./funcs.so")
+# cppyy.load_library("
 
 from cppyy.gbl import epsilon  # noqa: E402
 from cppyy.gbl import gamma  # noqa: E402
 from cppyy.gbl.std import vector  # noqa: E402
 from cppyy.gbl import uint16_t  # noqa: E402
+from cppyy.gbl import most_majority  # noqa: E402
+from cppyy.gbl import most_minority  # noqa: E402
 
 with open('../input.txt', 'r') as content:
     data = content.readlines()
@@ -19,3 +22,6 @@ for line in data:
 print(f"γ={gamma(v)}")
 print(f"ε={epsilon(v)}")
 print(f"part I: {gamma(v)*epsilon(v)}")
+
+print(f"part II: {most_majority(v)}*{most_minority(v)}")
+print(f"part II: {most_majority(v)*most_minority(v)}")
