@@ -18,31 +18,22 @@ std::size_t msb(const uint16_t number) {
 }
 
 uint16_t most_majority(const std::vector<uint16_t>& input) {
-  std::size_t bit_pos = msb(*ranges::max_element(input));
+  uint16_t testbit = 1 << msb(*ranges::max_element(input));
   uint16_t mask{0};
-  uint16_t pattern{majority_bit(input, 1 << bit_pos)};
-  if (bit_pos == 0) {
-    return pattern;
-  }
-  bit_pos--;
-  for (;; bit_pos--) {
-    pattern |= majority_bit(filter_stuff(input, pattern, mask), 1 << bit_pos);
-    mask |= 1 << bit_pos;
-    if (bit_pos == 0) {
-      break;
-    }
+  uint16_t pattern{majority_bit(input, testbit)};
+  testbit = testbit >> 1;
+  for (; testbit != 0; testbit = testbit >> 1) {
+    pattern |= majority_bit(filter_stuff(input, pattern, mask), testbit);
+    mask |= testbit;
   }
   return pattern;
 }
 
 uint16_t gamma(const std::vector<uint16_t>& input) {
   uint16_t pattern{0};
-  std::size_t bit_pos = msb(*ranges::max_element(input));
-  for (;; bit_pos--) {
-    pattern |= majority_bit(input, 1 << bit_pos);
-    if (bit_pos == 0) {
-      break;
-    }
+  uint16_t testbit = 1 << msb(*ranges::max_element(input));
+  for (; testbit != 0; testbit = testbit >> 1) {
+    pattern |= majority_bit(input, testbit);
   }
   return pattern;
 }
@@ -55,20 +46,18 @@ uint16_t epsilon(const std::vector<uint16_t>& input) {
 }
 
 uint16_t most_minority(const std::vector<uint16_t>& input) {
-  std::size_t bit_pos = msb(*ranges::max_element(input));
+  uint16_t testbit = 1 << msb(*ranges::max_element(input));
   uint16_t mask{0};
-  uint16_t pattern{majority_bit(input, 1 << bit_pos) ^ (1 << bit_pos)};
-  if (bit_pos == 0) {
-    return pattern;
-  }
-  bit_pos--;
-  for (;; bit_pos--) {
+  uint16_t pattern{majority_bit(input, testbit) ^ testbit};
+  testbit = testbit >> 1;
+  for (; testbit != 0; testbit = testbit >> 1) {
     // TODO: protect against set running empty.
-    pattern |= majority_bit(filter_stuff(input, pattern, mask), 1 << bit_pos) ^ (1 << bit_pos);
-    mask |= 1 << bit_pos;
-    if (bit_pos == 0) {
+    if (ranges::distance(filter_stuff(input, pattern, mask)) == 0) {
       break;
     }
+    pattern |=
+        majority_bit(filter_stuff(input, pattern, mask), testbit) ^ testbit;
+    mask |= testbit;
   }
   return pattern;
 }

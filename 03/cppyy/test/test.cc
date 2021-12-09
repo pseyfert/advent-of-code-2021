@@ -62,8 +62,8 @@ TEST(logic, filter) {
   auto filtered =
       filter_stuff(data, most_majority(data), 0b10000) | ranges::to_vector;
   EXPECT_EQ(filtered.size(), 5);
-  filtered =
-      filter_stuff(filtered, most_majority(filtered), 0b01000) | ranges::to_vector;
+  filtered = filter_stuff(filtered, most_majority(filtered), 0b01000) |
+             ranges::to_vector;
   EXPECT_EQ(filtered.size(), 4);
   filtered =
       filter_stuff(data, most_majority(filtered), 0b11000) | ranges::to_vector;
