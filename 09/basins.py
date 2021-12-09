@@ -14,4 +14,4 @@ basins[:-1, :] &= (input_data[:-1, :] < input_data[1:, :])
 basins[:, 1:] &= (input_data[:, 1:] < input_data[:, :-1])
 basins[:, :-1] &= (input_data[:, :-1] < input_data[:, 1:])
 
-print(f"part I: {((1+input_data)*basins).sum()}")
+print(f"part I: {np.ma.masked_array(input_data+1, ~basins).sum()}")
