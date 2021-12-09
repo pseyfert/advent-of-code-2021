@@ -40,7 +40,7 @@ uint16_t gamma(const std::vector<uint16_t>& input) {
 
 uint16_t epsilon(const std::vector<uint16_t>& input) {
   std::size_t msb_ = msb(*ranges::max_element(input));
-  uint16_t pattern{(1 << msb_) - 1};
+  uint16_t pattern{(1 << 1 + msb_) - 1};
   uint16_t gamma_ = gamma(input);
   return pattern & ~gamma_;
 }
