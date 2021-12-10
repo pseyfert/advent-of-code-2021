@@ -6,27 +6,26 @@ zmodload zsh/mapfile
 local -a lines
 lines=("${(f)mapfile[$1]}")
 
-local -a calib
-calib=("${(f)mapfile[calib.txt]}")
-
 local -i score_i=0
 local -a scores_ii
 scores_ii=()
 local -A matches
-matches[${${calib[1]}[1]}]=${${calib[2]}[1]}
-matches[${${calib[1]}[2]}]=${${calib[2]}[2]}
-matches[${${calib[1]}[3]}]=${${calib[2]}[3]}
-matches[${${calib[1]}[4]}]=${${calib[2]}[4]}
+local l=\<
+local g=\>
+matches[\[]=\]
+matches[$l]=\>
+matches[\(]=\)
+matches[\{]=\}
 local -A table
-table[${${calib[2]}[1]}]=57
-table[${${calib[2]}[2]}]=25137
-table[${${calib[2]}[3]}]=3
-table[${${calib[2]}[4]}]=1197
+table[\]]=57
+table[$g]=25137
+table[\)]=3
+table[\}]=1197
 local -A table_2
-table_2[${${calib[2]}[1]}]=2
-table_2[${${calib[2]}[2]}]=4
-table_2[${${calib[2]}[3]}]=1
-table_2[${${calib[2]}[4]}]=3
+table_2[\]]=2
+table_2[$g]=4
+table_2[\)]=1
+table_2[\}]=3
 
 for line in $lines; do
   local -a expectstack
