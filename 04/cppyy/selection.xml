@@ -1,0 +1,6 @@
+<lcgdict>
+  <!-- <function pattern="*" /> -->
+  <class name="Board" />
+  <class name="Result" />
+  <!-- <enum pattern="*" /> -->
+</lcgdict>
