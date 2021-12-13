@@ -1,0 +1,3 @@
+[submodule "13/forks/advent-of-code-ocr"]
+	path = 13/forks/advent-of-code-ocr
+	url = https://github.com/pseyfert/advent-of-code-ocr
