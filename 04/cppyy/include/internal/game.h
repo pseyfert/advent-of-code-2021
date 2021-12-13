@@ -42,16 +42,16 @@ Result play_game(Board const& board, T&& drawings) {
   std::array<uint_fast8_t, 25> flagged;
   ranges::generate(flagged, []() { return 0; });
 
-  auto win = ranges::find_if(drawings, [&flagged, &board](auto draw) {
-    // TODO: adapt won, so this can go to outer scope.
-    auto zip = ranges::view::zip(board.m_cells, flagged);
+  auto zip = ranges::view::zip(board.m_cells, flagged);
+  auto win = ranges::find_if(drawings, [&zip](auto draw) {
     ranges::for_each(zip, [draw](auto pair) {
       auto& [cellval, flag] = pair;
       if (cellval == draw) {
         flag = 1;
       }
     });
-    return won(flagged);
+    return won(
+        zip | ranges::view::transform([](auto pair) { return pair.second; }));
   });
 
   CHECK(win != end(drawings));
