@@ -27,8 +27,8 @@ heuristic() {
 
 while true; do
   # I am really not happy with my map sorting, reverse lookup handling here...
-  local -a costs
-  costs=()
+  local -a local_costs
+  local_costs=()
   local -a fringe_points
   fringe_points=()
   echo "fringe contains $fringe"
@@ -36,47 +36,17 @@ while true; do
   for p in $fringe; do
     # echo "fringe point $p"
     fringe_points+=($p)
-    costs+=($cost[$p])
-  done
-  # echo "costs for fringe: $costs"
-  local -a sorted
-  sorted=(${(on)costs})
-  # echo "costs for fringe sorted: $sorted"
-  local -i current_best_s=$sorted[1]
-  local current_best_p=""
-  local -a current_bests_p
-  current_bests_p=()
-  for p in $fringe; do
-    # echo "comparing $cost[$p] and $current_best_s"
-    if [[ $cost[$p] == $current_best_s ]]; then
-      current_bests_p+=($p)
-    fi
-  done
-  if (( $#current_bests_p == 1 )); then
-    current_best_p=$current_bests_p[1]
-  elif (( $#current_bests_p > 1 )); then
-    local -a heuristics
-    heuristics=()
-    # echo "contenders entering heuristics: $current_bests_p"
-    for p in $current_bests_p; do
       local -i x=${p%,*}
       local -i y=${p#*,}
       heuristic $x $y
-      heuristics+=($?)
+    local -i costhere=$(( $? + $cost[$p] ))
+    local_costs+=($costhere)
     done
-    sorted=(${(on)heuristics})
-    # echo "sorted is $sorted"
-    current_best_p=$current_bests_p[${heuristics[(i)$sorted[1]]}]
-    # echo "picking $current_best_p"
-  else
-    # echo "you fucked up"
-    # echo "interesting fringe: $fringe_points"
-    # echo "their costs: $costs"
-    # echo "that sorted: $sorted"
-    # echo "best contenders: $current_bests_p"
-    # echo "best score: $current_best_s"
-    break
-  fi
+  local -a sorted
+  sorted=(${(on)local_costs})
+  local current_best_p=""
+  current_best_p=$fringe_points[${local_costs[(i)$sorted[1]]}]
+  local -i current_best_s=$cost[$current_best_p]
 
   local -i x=${current_best_p%,*}
   local -i y=${current_best_p#*,}
