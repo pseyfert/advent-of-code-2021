@@ -22,6 +22,10 @@ local -i best_heur=1000
 heuristic() {
   # $1 = x
   # $2 = y
+
+  # NB: Heuristic hardly helps, for each col/row getting closer to the destination, we pay on average a cost of 5 (assuming completely random node costs)
+  #     The heuristic adds only 1.
+  #
   local -i x_=$1
   local -i y_=$2
   local -i retval=$(( 1000 - x - y ))
@@ -52,6 +56,7 @@ nodecost() {
 
 while true; do
   # I am really not happy with my map sorting, reverse lookup handling here...
+  # For runtime, avoid sorting the fringe (N log(N), assuming $fringe doesn't get sorted through inserting/removing elements).
   local -a local_costs
   local_costs=()
   local -a fringe_points
