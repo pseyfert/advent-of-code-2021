@@ -49,11 +49,35 @@ nodecost() {
   local -i x__=$(( 1 + ((x_-1) % 100) ))
   local -i y__=$(( 1 + ((y_-1) % 100) ))
 
-  local -i retval=$(( ( x_rollover + y_rollover + ${maze[$y__][$x__]}) % 10 ))
+  echo -n "$x_,$y_ → $x__,$y__ → "
+  local -i retval=$(( 1 + ( ( x_rollover + y_rollover + ${maze[$y__][$x__]} - 1 ) % 9 ) ))
+  echo "${maze[$y__][$x__]} → $retval"
 
   return $retval
 }
 
+
+# TODO:
+#
+# the search will form "bubbles" in the map, that do not need to be explored further:
+#
+# 1111199999
+# 1999199999
+# 1999199999
+# 1999199999
+# 1999199999
+# 1111X99999
+# 9999919999
+# 9999991999
+# 9999999119
+#
+# At some point, X will be on the fringe, and all the points in the upper left rectangle can be ignored.
+# Algorithmically istm, like the fringe will always contain a line from (1,?) to (?,1). This can be found following the "keep following your right-hand wall" maze solving algorithm.
+# Any fringe point not on that line explores bubbles and shall be ignored.
+# Bubbles from, e.g. when an up movement reaches a point that is below/left/right of a fringe point.
+
+
+local -i prev_it=3000
 while true; do
   # I am really not happy with my map sorting, reverse lookup handling here...
   # For runtime, avoid sorting the fringe (N log(N), assuming $fringe doesn't get sorted through inserting/removing elements).
@@ -76,7 +100,11 @@ while true; do
     (( costhere < current_best_c )) && current_best_p=$p
     (( costhere < current_best_c )) && current_best_s=$cost[$p]
     (( costhere < current_best_c )) && current_best_c=$costhere
+    # since cost+heuristic is monotonic rising throughout the search, we can abort immediately if we
+    # encounter a cost that we've already seen.
+    (( costhere <= prev_it )) && break
   done
+  prev_it=$current_best_c
 
   # echo "$current_best_p ($current_best_s)"
 
@@ -92,7 +120,7 @@ while true; do
       passed+=($candidate)
       local -i x_=$(( x - 1 ))
       local -i y_=$(( y ))
-      nodecost $x $y
+      nodecost $x_ $y_
       local -i add=$?
       cost[$candidate]=$(( current_best_s + add ))
     fi
@@ -107,7 +135,7 @@ while true; do
       passed+=($candidate)
       local -i x_=$(( x + 1 ))
       local -i y_=$(( y ))
-      nodecost $x $y
+      nodecost $x_ $y_
       local -i add=$?
       cost[$candidate]=$(( current_best_s + add ))
     fi
@@ -122,7 +150,7 @@ while true; do
       passed+=($candidate)
       local -i x_=$(( x ))
       local -i y_=$(( y - 1 ))
-      nodecost $x $y
+      nodecost $x_ $y_
       local -i add=$?
       cost[$candidate]=$(( current_best_s + add))
     fi
@@ -137,7 +165,7 @@ while true; do
       passed+=($candidate)
       local -i x_=$(( x ))
       local -i y_=$(( y + 1 ))
-      nodecost $x $y
+      nodecost $x_ $y_
       local -i add=$?
       cost[$candidate]=$(( current_best_s + add ))
     fi
