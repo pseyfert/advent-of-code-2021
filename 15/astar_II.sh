@@ -30,10 +30,10 @@ heuristic() {
   local -i y_=$2
   local -i retval=$(( 1000 - x - y ))
 
-  if (( retval < best_heur )); then
-    echo "$x_,$y_"
-    best_heur=$(( retval - 5 ))
-  fi
+  # if (( retval < best_heur )); then
+  #   echo "$x_,$y_"
+  #   best_heur=$(( retval - 5 ))
+  # fi
 
   return $retval
 }
@@ -49,9 +49,9 @@ nodecost() {
   local -i x__=$(( 1 + ((x_-1) % 100) ))
   local -i y__=$(( 1 + ((y_-1) % 100) ))
 
-  echo -n "$x_,$y_ → $x__,$y__ → "
+  # echo -n "$x_,$y_ → $x__,$y__ → "
   local -i retval=$(( 1 + ( ( x_rollover + y_rollover + ${maze[$y__][$x__]} - 1 ) % 9 ) ))
-  echo "${maze[$y__][$x__]} → $retval"
+  # echo -n "${maze[$y__][$x__]} → $retval"
 
   return $retval
 }
@@ -86,8 +86,8 @@ while true; do
   local -a fringe_points
   fringe_points=()
   # for k v in ${(@kv)cost}; do echo "$k→$v"; done
-  local -i current_best_s=2000
-  local -i current_best_c=2000
+  local -i current_best_s=10000
+  local -i current_best_c=10000
   local current_best_p=""
   for p in $fringe; do
     # echo "fringe point $p"
@@ -111,11 +111,20 @@ while true; do
   local -i x=${current_best_p%,*}
   local -i y=${current_best_p#*,}
 
+  if (( x==0 && y==0 )); then
+    echo "fringe is $fringe"
+    for k v in ${(@kv) cost}; do echo "$k→$v"; done
+  fi
+
+  echo "exploring $current_best_p ($current_best_s) $x,$y"
+
   # can go left
   if (( x > 1 )); then
+    # echo -n "try go left"
     local candidate=""
     candidate=$((x-1)),$y
     if [[ ${(M)#passed:#$candidate} == 0 ]]; then
+      # echo -n " allowed "
       fringe+=($candidate)
       passed+=($candidate)
       local -i x_=$(( x - 1 ))
@@ -123,14 +132,19 @@ while true; do
       nodecost $x_ $y_
       local -i add=$?
       cost[$candidate]=$(( current_best_s + add ))
+    #   echo " → $cost[$candidate]"
+    # else
+    #   echo "can't"
     fi
   fi
 
   # can go right
   if (( x < 500 )); then
+    # echo -n "try go right"
     local candidate=""
     candidate=$((x+1)),$y
     if [[ ${(M)#passed:#$candidate} == 0 ]]; then
+      # echo -n " allowed "
       fringe+=($candidate)
       passed+=($candidate)
       local -i x_=$(( x + 1 ))
@@ -138,14 +152,19 @@ while true; do
       nodecost $x_ $y_
       local -i add=$?
       cost[$candidate]=$(( current_best_s + add ))
+    #   echo " → $cost[$candidate]"
+    # else
+    #   echo "can't"
     fi
   fi
 
   # can go up
   if (( y > 1 )); then
+    # echo -n "try go up"
     local candidate=""
     candidate=$x,$((y-1))
     if [[ ${(M)#passed:#$candidate} == 0 ]]; then
+      # echo -n " allowed "
       fringe+=($candidate)
       passed+=($candidate)
       local -i x_=$(( x ))
@@ -153,14 +172,19 @@ while true; do
       nodecost $x_ $y_
       local -i add=$?
       cost[$candidate]=$(( current_best_s + add))
+    #   echo " → $cost[$candidate]"
+    # else
+    #   echo "can't"
     fi
   fi
 
   # can go down
   if (( y < 500 )); then
+    # echo -n "try go down"
     local candidate=""
     candidate=$x,$((y+1))
     if [[ ${(M)#passed:#$candidate} == 0 ]]; then
+      # echo -n " allowed "
       fringe+=($candidate)
       passed+=($candidate)
       local -i x_=$(( x ))
@@ -168,6 +192,9 @@ while true; do
       nodecost $x_ $y_
       local -i add=$?
       cost[$candidate]=$(( current_best_s + add ))
+    #   echo " → $cost[$candidate]"
+    # else
+    #   echo "can't"
     fi
   fi
 
@@ -177,6 +204,15 @@ while true; do
   # echo "will remove $current_best_p → $tmp"
   fringe=(${fringe:|tmp})
   passed+=($current_best_p)
+
+  # Clear up storage of cost
+  local -A tmp_cost
+  tmp_cost=()
+  for p in $fringe; do
+    tmp_cost[$p]=$cost[$p]
+  done
+  cost=(${(@kv)tmp_cost})
+
   # echo "new fringe: $fringe"
   if [[ ${(M)#fringe:#$dest} -gt 0 ]]; then
     break
