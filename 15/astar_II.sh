@@ -92,11 +92,13 @@ while true; do
   for p in $fringe; do
     # echo "fringe point $p"
     fringe_points+=($p)
-    local -i x=${p%,*}
-    local -i y=${p#*,}
-    heuristic $x $y
-    local -i heur=$?
-    local -i costhere=$(( $heur + $cost[$p] ))
+    # TODO: out of curiosity, disabling the heuristics
+    # local -i x=${p%,*}
+    # local -i y=${p#*,}
+    # heuristic $x $y
+    # local -i heur=$?
+    # local -i costhere=$(( $heur + $cost[$p] ))
+    local -i costhere=$(( $cost[$p] ))
     (( costhere < current_best_c )) && current_best_p=$p
     (( costhere < current_best_c )) && current_best_s=$cost[$p]
     (( costhere < current_best_c )) && current_best_c=$costhere
@@ -111,12 +113,7 @@ while true; do
   local -i x=${current_best_p%,*}
   local -i y=${current_best_p#*,}
 
-  if (( x==0 && y==0 )); then
-    echo "fringe is $fringe"
-    for k v in ${(@kv) cost}; do echo "$k→$v"; done
-  fi
-
-  echo "exploring $current_best_p ($current_best_s) $x,$y"
+  # echo "exploring $current_best_p ($current_best_s) $x,$y"
 
   # can go left
   if (( x > 1 )); then
@@ -205,13 +202,13 @@ while true; do
   fringe=(${fringe:|tmp})
   passed+=($current_best_p)
 
-  # Clear up storage of cost
-  local -A tmp_cost
-  tmp_cost=()
-  for p in $fringe; do
-    tmp_cost[$p]=$cost[$p]
-  done
-  cost=(${(@kv)tmp_cost})
+  # # Clear up storage of cost
+  # local -A tmp_cost
+  # tmp_cost=()
+  # for p in $fringe; do
+  #   tmp_cost[$p]=$cost[$p]
+  # done
+  # cost=(${(@kv)tmp_cost})
 
   # echo "new fringe: $fringe"
   if [[ ${(M)#fringe:#$dest} -gt 0 ]]; then
@@ -219,4 +216,4 @@ while true; do
   fi
 done
 
-echo "part I: $cost[500,500]"
+echo "part II: $cost[500,500]"
